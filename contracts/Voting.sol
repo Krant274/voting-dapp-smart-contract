@@ -17,7 +17,6 @@ contract Voting {
     mapping(uint => uint) public candidatesCount;
     mapping(uint => mapping(address => bool)) public hasVoted;
 
-    // Events - Rất quan trọng để cập nhật Real-time
     event ElectionStarted(uint electionId);
     event ElectionStopped(uint electionId);
     event VoteCasted(uint electionId, address voter, uint candidateId);
@@ -30,7 +29,7 @@ contract Voting {
 
     constructor() {
         admin = msg.sender;
-        currentElectionId = 1;
+        currentElectionId = 0;
         votingActive = false;
     }
 
@@ -81,20 +80,17 @@ contract Voting {
         return (ids, names, descs, votes);
     }
 
-    // HÀM MỚI: Xử lý trường hợp hòa (Ties)
     function getWinner() public view returns (string[] memory winnerNames, uint winnerVotes) {
         uint maxVotes = 0;
         uint cCount = candidatesCount[currentElectionId];
         if (cCount == 0) return (new string[](0), 0);
 
-        // Bước 1: Tìm số phiếu cao nhất
         for (uint i = 1; i <= cCount; i++) {
             if (candidates[currentElectionId][i].voteCount > maxVotes) {
                 maxVotes = candidates[currentElectionId][i].voteCount;
             }
         }
 
-        // Bước 2: Đếm xem có bao nhiêu người cùng đạt số phiếu đó
         uint count = 0;
         for (uint i = 1; i <= cCount; i++) {
             if (candidates[currentElectionId][i].voteCount == maxVotes) {
@@ -102,7 +98,6 @@ contract Voting {
             }
         }
 
-        // Bước 3: Đưa tất cả vào mảng trả về
         winnerNames = new string[](count);
         uint index = 0;
         for (uint i = 1; i <= cCount; i++) {
