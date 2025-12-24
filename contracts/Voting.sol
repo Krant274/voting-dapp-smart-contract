@@ -46,6 +46,8 @@ contract Voting {
     }
 
     function registerCandidate(string memory _name, string memory _description) public onlyAdmin {
+        require(currentElectionId > 0, "He thong chua duoc khoi tao.");
+        require(votingActive, "Khong the bo sung ung vien khi cuoc binh chon da ket thuc.");
         uint cCount = candidatesCount[currentElectionId];
         cCount++;
         candidates[currentElectionId][cCount] = Candidate(cCount, _name, _description, 0);
